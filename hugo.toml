@@ -1,0 +1,7 @@
+baseURL = 'http://example.org/'
+languageCode = 'en-gb'
+title = 'My New Blog'
+theme = 'hugo-bearblog'
+
+[params]
+description = "A simple blog about interesting things."
