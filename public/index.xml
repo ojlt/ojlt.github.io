@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>My New Blog</title>
+    <title>Owain&#39;s Blog</title>
     <link>http://localhost:1313/</link>
-    <description>Recent content on My New Blog</description>
+    <description>Recent content on Owain&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 23 Sep 2025 11:40:44 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 23 Sep 2025 13:22:05 +0100</lastBuildDate>
     <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Desert Island Discs</title>
+      <link>http://localhost:1313/desert-island-discs/</link>
+      <pubDate>Tue, 23 Sep 2025 13:22:05 +0100</pubDate>
+      <guid>http://localhost:1313/desert-island-discs/</guid>
+      <description>I absolutely love listening to the popular radio program &amp;ldquo;Desert Island Discs&amp;rdquo;. The concept is simple: if you were on a desert island, which 8 pieces of music (that can fit on a single &amp;ldquo;disc&amp;rdquo;) would you take? My current selection, in no particular order, are the following:&#xA;Sibelius - Symphony 7. For me the most &amp;ldquo;perfect&amp;rdquo; orchestral work ever composed. Still waiting to hear this one live. Could this moment be the best cadence in music?</description>
+    </item>
     <item>
       <title>My First Post</title>
       <link>http://localhost:1313/posts/my-first-post/</link>

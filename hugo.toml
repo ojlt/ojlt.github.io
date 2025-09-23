@@ -1,7 +1,22 @@
 baseURL = 'https://ojlt.github.io/'
 languageCode = 'en-gb'
-title = 'My New Blog'
+title = "Owain's Blog"
 theme = 'hugo-bearblog'
 
 [params]
 description = "A simple blog about interesting things."
+
+[[menu.main]]
+  name = "Home"
+  url = "/"
+  weight = 5
+
+[[menu.main]]
+  name = "Desert Island Discs"      # The text that will appear in the menu
+  url = "/desert-island-discs/"     # The link to your new page
+  weight = 20         # A number to control the order
+
+[[menu.main]]
+  name = "Posts"
+  url = "/posts/"
+  weight = 10
