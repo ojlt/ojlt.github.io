@@ -1,4 +1,4 @@
-baseURL = 'http://example.org/'
+baseURL = 'https://ojlt.github.io/'
 languageCode = 'en-gb'
 title = 'My New Blog'
 theme = 'hugo-bearblog'
