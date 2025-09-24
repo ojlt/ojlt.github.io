@@ -16,11 +16,11 @@
       <description>I absolutely love listening to the popular radio program &amp;ldquo;Desert Island Discs&amp;rdquo;. The concept is simple: if you were on a desert island, which 8 pieces of music (that can fit on a single &amp;ldquo;disc&amp;rdquo;) would you take? My current selection, in no particular order, are the following:&#xA;Sibelius - Symphony 7. For me the most &amp;ldquo;perfect&amp;rdquo; orchestral work ever composed. Still waiting to hear this one live. Could this moment be the best cadence in music?</description>
     </item>
     <item>
-      <title>My First Post</title>
-      <link>http://localhost:1313/posts/my-first-post/</link>
-      <pubDate>Tue, 23 Sep 2025 11:40:44 +0100</pubDate>
-      <guid>http://localhost:1313/posts/my-first-post/</guid>
-      <description>Hello there! This is a draft!</description>
+      <title>So what is PPO anyway?</title>
+      <link>http://localhost:1313/posts/ppo/</link>
+      <pubDate>Mon, 15 Sep 2025 10:56:30 +0100</pubDate>
+      <guid>http://localhost:1313/posts/ppo/</guid>
+      <description>So what is PPO anyway? Proximal Policy Optimisation (PPO) is one of the most widely used algorithms in reinforcement learning. It is also a bit hard to understand. Here is its objective function in its full glory: $$ L^{CLIP}(\theta) = \mathbb{E}_{t}\left[\min\left(r_{t}(\theta)\hat{A}_{t}, \text{clip}(r_{t}(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_{t}\right)\right] $$&#xA;Make sense to you? If you&amp;rsquo;re anything like me when you first read it, probably not. This blog post aims to present a clear explanation of the PPO algorithm, aiming for intuition but also rigour, as the elegance of PPO is best appreciated with some maths.</description>
     </item>
   </channel>
 </rss>

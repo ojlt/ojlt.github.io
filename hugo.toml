@@ -17,6 +17,6 @@ description = "A simple blog about interesting things."
   weight = 20         # A number to control the order
 
 [[menu.main]]
-  name = "Posts"
+  name = "Blog"
   url = "/posts/"
   weight = 10

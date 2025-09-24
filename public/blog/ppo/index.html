@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en-gb">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta http-equiv="X-Clacks-Overhead" content="GNU Terry Pratchett" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>So what is PPO anyway? | Owain&#39;s Blog</title>
+<meta name="title" content="So what is PPO anyway?" />
+<meta name="description" content="Proximal Policy Optimisation (PPO) is one of the most widely used algorithms in reinforcement learning. It is also a bit hard to understand. Here is its objective function in its full glory:
+$$ L^{CLIP}(\theta) = \mathbb{E}{t}\left[\min\left(r{t}(\theta)\hat{A}{t}, \text{clip}(r{t}(\theta), 1-\epsilon, 1&#43;\epsilon)\hat{A}_{t}\right)\right] $$
+Make sense to you? If you&rsquo;re anything like me when you first read it, probably not. This blog post aims to present a clear explanation of the PPO algorithm, aiming for intuition but also rigour, as the elegance of PPO is best appreciated with some maths." />
+<meta name="keywords" content="" />
+
+
+<meta property="og:title" content="So what is PPO anyway?" />
+<meta property="og:description" content="Proximal Policy Optimisation (PPO) is one of the most widely used algorithms in reinforcement learning. It is also a bit hard to understand. Here is its objective function in its full glory:
+$$ L^{CLIP}(\theta) = \mathbb{E}{t}\left[\min\left(r{t}(\theta)\hat{A}{t}, \text{clip}(r{t}(\theta), 1-\epsilon, 1&#43;\epsilon)\hat{A}_{t}\right)\right] $$
+Make sense to you? If you&rsquo;re anything like me when you first read it, probably not. This blog post aims to present a clear explanation of the PPO algorithm, aiming for intuition but also rigour, as the elegance of PPO is best appreciated with some maths." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/blog/ppo/" /><meta property="article:section" content="blog" />
+<meta property="article:published_time" content="2025-09-15T10:56:30+01:00" />
+<meta property="article:modified_time" content="2025-09-15T10:56:30+01:00" />
+
+
+
+
+<meta name="twitter:card" content="summary"/><meta name="twitter:title" content="So what is PPO anyway?"/>
+<meta name="twitter:description" content="Proximal Policy Optimisation (PPO) is one of the most widely used algorithms in reinforcement learning. It is also a bit hard to understand. Here is its objective function in its full glory:
+$$ L^{CLIP}(\theta) = \mathbb{E}{t}\left[\min\left(r{t}(\theta)\hat{A}{t}, \text{clip}(r{t}(\theta), 1-\epsilon, 1&#43;\epsilon)\hat{A}_{t}\right)\right] $$
+Make sense to you? If you&rsquo;re anything like me when you first read it, probably not. This blog post aims to present a clear explanation of the PPO algorithm, aiming for intuition but also rigour, as the elegance of PPO is best appreciated with some maths."/>
+
+
+
+<meta itemprop="name" content="So what is PPO anyway?">
+<meta itemprop="description" content="Proximal Policy Optimisation (PPO) is one of the most widely used algorithms in reinforcement learning. It is also a bit hard to understand. Here is its objective function in its full glory:
+$$ L^{CLIP}(\theta) = \mathbb{E}{t}\left[\min\left(r{t}(\theta)\hat{A}{t}, \text{clip}(r{t}(\theta), 1-\epsilon, 1&#43;\epsilon)\hat{A}_{t}\right)\right] $$
+Make sense to you? If you&rsquo;re anything like me when you first read it, probably not. This blog post aims to present a clear explanation of the PPO algorithm, aiming for intuition but also rigour, as the elegance of PPO is best appreciated with some maths."><meta itemprop="datePublished" content="2025-09-15T10:56:30+01:00" />
+<meta itemprop="dateModified" content="2025-09-15T10:56:30+01:00" />
+<meta itemprop="wordCount" content="1756">
+<meta itemprop="keywords" content="" />
+<meta name="referrer" content="no-referrer-when-downgrade" />
+
+  <style>
+  :root {
+    --width: 720px;
+    --font-main: Verdana, sans-serif;
+    --font-secondary: Verdana, sans-serif;
+    --font-scale: 1em;
+    --background-color: #fff;
+    --heading-color: #222;
+    --text-color: #444;
+    --link-color: #3273dc;
+    --visited-color: #8b6fcb;
+    --blockquote-color: #222;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background-color: #01242e;
+      --heading-color: #eee;
+      --text-color: #ddd;
+      --link-color: #8cc2dd;
+      --visited-color: #8b6fcb;
+      --blockquote-color: #ccc;
+    }
+  }
+
+  body {
+    font-family: var(--font-secondary);
+    font-size: var(--font-scale);
+    margin: auto;
+    padding: 20px;
+    max-width: var(--width);
+    text-align: left;
+    background-color: var(--background-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--text-color);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-main);
+    color: var(--heading-color);
+  }
+
+  a {
+    color: var(--link-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  nav a {
+    margin-right: 8px;
+  }
+
+  strong,
+  b {
+    color: var(--heading-color);
+  }
+
+  button {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  time {
+    font-family: monospace;
+    font-style: normal;
+    font-size: 15px;
+  }
+
+  main {
+    line-height: 1.6;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px dashed;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    font-family: monospace;
+    padding: 2px;
+    border-radius: 3px;
+  }
+
+  blockquote {
+    border-left: 1px solid #999;
+    color: var(--blockquote-color);
+    padding-left: 20px;
+    font-style: italic;
+  }
+
+  footer {
+    padding: 25px 0;
+    text-align: center;
+  }
+
+  .title:hover {
+    text-decoration: none;
+  }
+
+  .title h1 {
+    font-size: 1.5em;
+  }
+
+  .inline {
+    width: auto !important;
+  }
+
+  .highlight,
+  .code {
+    border-radius: 3px;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    overflow-x: auto;
+  }
+
+   
+  ul.blog-posts {
+    list-style-type: none;
+    padding: unset;
+  }
+
+  ul.blog-posts li {
+    display: flex;
+  }
+
+  ul.blog-posts li span {
+    flex: 0 0 130px;
+  }
+
+  ul.blog-posts li a:visited {
+    color: var(--visited-color);
+  }
+
+</style>
+
+</head>
+
+<body>
+  <header><a href="/" class="title">
+  <h2>Owain&#39;s Blog</h2>
+</a>
+<nav>
+<a href="/">Home</a>
+
+<a href="/blog/">Blog</a>
+
+<a href="/desert-island-discs/">Desert Island Discs</a>
+
+</nav>
+</header>
+  <main>
+
+<h1>So what is PPO anyway?</h1>
+<p>
+  <i>
+    <time datetime='2025-09-15'>
+      15 Sep, 2025
+    </time>
+  </i>
+</p>
+
+<content>
+  <p>Proximal Policy Optimisation (PPO) is one of the most widely used algorithms in reinforcement learning. It is also a bit hard to understand. Here is its objective function in its full glory:</p>
+<p>$$
+L^{CLIP}(\theta) = \mathbb{E}<em>{t}\left[\min\left(r</em>{t}(\theta)\hat{A}<em>{t}, \text{clip}(r</em>{t}(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_{t}\right)\right]
+$$</p>
+<p>Make sense to you? If you&rsquo;re anything like me when you first read it, probably not. This blog post aims to present a clear explanation of the PPO algorithm, aiming for intuition but also rigour, as the elegance of PPO is best appreciated with some maths. This post assumes some basic familiarity with reinforcement learning jargon, and for a quick refresher, there is no better primer than this <a href="https://karpathy.github.io/2016/05/31/rl/">blog</a> by Andrej Karpathy.</p>
+<p>To understand PPO, you first need to understand Trust Region Policy Optimisation (TRPO), PPO&rsquo;s direct predecessor. To understand TRPO, you first need to understand the problems that on-policy RL faced.</p>
+<h2 id="pre-trpo">Pre-TRPO</h2>
+<p>Deep learning-based RL is similar to supervised learning in the sense that it is fundamentally a neural network optimisation problem. What makes on-policy RL difficult is that the policy (the neural network) that you are trying to <em>optimise</em> is also the policy that is <em>generating</em> the data you are optimising over. This means that if an optimisation step takes a policy to a barren part of the parameter space, the agent will generate its next set of experiences mostly based on this doomed policy. This is known as <a href="https://en.wikipedia.org/wiki/Catastrophic_interference">catastrophic interference</a>.</p>
+<p>Catastrophic interference meant that on-policy algorithms often had extremely low learning rates, frequently taking millions of steps to converge to a satisfactory policy. In addition, the algorithms were extremely data-hungry, as there was just a single optimisation step per data-collection step.</p>
+<h2 id="trpo">TRPO</h2>
+<p>TRPO was created in 2015 and aimed to address the problems outlined above. Before introducing TRPO, here is some notation.</p>
+<ul>
+<li>$\eta(\pi)$ is the expected return on a policy $\pi$. Explicitly, $\eta(\pi) = \sum_{\tau} P(\tau|\pi) \left[\sum_{t=0}^{\infty} \gamma^t r(s_t, a_t)\right]$, where $P(\tau|\pi) = p(s_0) \prod_{t=0}^{\infty} \pi(a_t|s_t)p(s_{t+1}|s_t, a_t)$ is the probability of a trajectory $\tau$ given the policy $\pi$.</li>
+<li>$Q^{\pi}(s,a)$ is the action-value function, which is the expected total reward the agent can get by taking action $a$ in state $s$ and following policy $\pi$ afterwards.</li>
+<li>$V^{\pi}(s)$ is the state-value function. This is the expected total reward the agent can get starting in state $s$ and following policy $\pi$ afterwards. It can also be represented in terms of $Q^{\pi}$: $V^{\pi}(s) = \sum_{a \in A} \pi(a|s) Q^{\pi}(s, a)$.</li>
+<li>$A^{\pi}(s,a) = Q^{\pi}(s,a) - V^{\pi}(s)$ is the advantage function. Intuitively, it is a measure of how good an action $a$ is in state $s$, compared to the <em>average</em> action the policy would take in state $s$.</li>
+<li>$p_{\pi}(s) = \mathbb{E}<em>{\pi} \left[ \sum</em>{t=0}^\infty \gamma^t I_{S_t=s} \right]$ is the <em>discounted state visitation frequency</em>. It is a measure of how often we expect to encounter state $s$ following policy $\pi$, assigning heavier weights to earlier instances of $s$. Note that this is not actually a probability distribution.</li>
+</ul>
+<p>Now consider two different policies $\pi$ and $\pi&rsquo;$. To measure their relative performance, we could take the difference between their expected returns, denoted $\Delta_{\eta}(\pi,\pi&rsquo;)$:
+$$
+\Delta_{\eta}(\pi,\pi&rsquo;) = \eta(\pi&rsquo;)-\eta(\pi)
+$$</p>
+<p>This form of $\Delta_{\eta}(\pi,\pi&rsquo;)$ is not the most useful, and I claim the following:
+$$
+\begin{equation}
+\Delta_{\eta}(\pi,\pi&rsquo;) = \mathbb{E}<em>{\pi&rsquo;}\left[\sum</em>{t=0}^{\infty} \gamma^t A^{\pi}(s_t, a_t)\right] = \eta(\pi&rsquo;)-\eta(\pi)
+\end{equation}
+$$</p>
+<p>Here is a short derivation:
+$$
+\begin{array}{rcl}
+\mathbb{E}<em>{\pi&rsquo;}\left[\sum</em>{t=0}^{\infty} \gamma^t A^{\pi}(s_t, a_t)\right] &amp; = &amp; \mathbb{E}<em>{\pi&rsquo;}\left[\sum</em>{t=0}^{\infty}\gamma^t(Q^{\pi}(s_t, a_t) - V^{\pi}(s_t))\right] \
+&amp; = &amp; \mathbb{E}<em>{\pi&rsquo;} \left[ \sum</em>{t=0}^{\infty} \gamma^t (R_{t+1} + \gamma V^{\pi}(s_{t+1}) - V^{\pi}(s_t)) \right] \
+&amp; = &amp; \mathbb{E}<em>{\pi&rsquo;}\left[ \sum</em>{t=0}^{\infty} \gamma^t R_{t+1} + \sum_{t=0}^{\infty} (\gamma^{t+1}V^{\pi}(s_{t+1}) - \gamma^t V^{\pi}(s_t)) \right] \
+&amp; = &amp; \mathbb{E}<em>{\pi&rsquo;}\left[ \sum</em>{t=0}^{\infty} \gamma^t R_{t+1} + \lim_{t \to \infty}\gamma^tV^{\pi}(s_{t+1}) - \gamma^0V^{\pi}(s_0)\right] \
+&amp; = &amp; \eta(\pi&rsquo;) - \mathbb{E}<em>{\pi&rsquo;}[V^{\pi}(s_0)] \
+&amp; = &amp; \eta(\pi&rsquo;) - V^{\pi}(s_0)\mathbb{E}</em>{\pi&rsquo;}[1] \
+&amp; = &amp; \eta(\pi&rsquo;)-\eta(\pi)
+\end{array}
+$$
+Intuitively, this means that to compare $\pi$ and $\pi&rsquo;$, we only need to consider how the advantage function of the original policy $\pi$ is weighted under the new policy $\pi&rsquo;$.</p>
+<p>Now that we&rsquo;ve expressed $\Delta_{\eta}$ in a more workable form, let&rsquo;s see what happens when $\pi$ and $\pi&rsquo;$ are very similar policies. In particular, we will assume that the <em>visitation frequencies</em> are similar:
+$$
+p_{\pi}(s) \approx p_{\pi&rsquo;}(s)
+$$
+Using this assumption and equation (1), it follows that:
+$$
+\begin{array}{rcl}
+\Delta_{\eta}(\pi, \pi&rsquo;) &amp; = &amp; \mathbb{E}<em>{\pi&rsquo;}\left[\sum</em>{t=0}^{\infty} \gamma^t A^{\pi}(s_t, a_t)\right] \
+&amp; = &amp; \sum_{s}p_{\pi&rsquo;}(s)\sum_a\pi&rsquo;(a)A^{\pi}(s,a) \
+&amp; \approx &amp; \sum_{s}p_{\pi}(s)\sum_a\pi&rsquo;(a)A^{\pi}(s,a)
+\end{array}
+$$</p>
+<p>Remember that this $\Delta_{\eta}$ is a representation of how well $\pi&rsquo;$ performs relative to $\pi$. The power of this approximation may not be obvious immediately and has to do with how we actually calculate $p_{\pi_0}$ for some generic policy $\pi_0$. Since we cannot take infinite environment steps, $p_{\pi_0}$ is always <em>approximated</em> from our environmental observations. Crucially, we cannot calculate $p_{\pi_0}$ until we have actually run policy $\pi_0$ in our environment. With this idea in mind, calculating
+$$
+\sum_{s}p_{\pi&rsquo;}(s)\sum_a\pi&rsquo;(a)A^{\pi}(s,a)
+$$
+would only be possible <em>after</em> taking a large number of environment steps under policy $\pi&rsquo;$. This is extremely computationally expensive and is one of the key problems that TRPO set out to address. Put simply, we can now regard a parameter update as a pure optimisation step, optimising parameters over
+$$
+\sum_{s}p_{\pi}(s)\sum_a\pi&rsquo;(a)A^{\pi}(s,a)
+$$
+granted that the approximation $p_{\pi}(s) \approx p_{\pi&rsquo;}(s)$ is well-founded. In the TRPO paper, a powerful bound was found involving the <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">$KL$ divergence</a>, which can roughly be understood as a measure of how similar two probability distributions are. In the TRPO paper, it was suggested that as long as the mean $KL$ divergence (denoted $\bar{D}<em>{KL}$) between two policies was small enough, the approximation between the visitation frequencies could yield strong results. In particular, if we denote the objective function as
+$$
+L</em>{\pi}(\pi&rsquo;) = \sum_{s}p_{\pi}(s)\sum_a\pi&rsquo;(a)A^{\pi}(s,a)
+$$
+then the TRPO algorithm is the following: Given some policy $\pi$, find the new policy by
+$$
+\max_{\pi&rsquo;}L_{\pi}(\pi&rsquo;) \quad \text{subject to} \quad \bar{D}_{KL}(\pi||\pi&rsquo;)&lt;\delta
+$$</p>
+<p>And that is TRPO! Notice the following:</p>
+<ul>
+<li>The use of the trust region $\bar{D}_{KL}(\pi||\pi&rsquo;)&lt;\delta$ ensures that policy updates never stray too far, which allows for much higher learning rates before running into the problem of catastrophic interference.</li>
+<li>One round of collected data yields multiple rounds of optimisation steps, meaning TRPO is much more sample-efficient than the on-policy algorithms that came before it.</li>
+</ul>
+<p>Note that the form of the objective function above is not the form in which it is usually presented. It is typical to present it in terms of an expectation over the policy, which is not hard to derive.</p>
+<p>$$
+\begin{array}{rcl}
+L_{\pi}(\pi&rsquo;) &amp; = &amp; \sum_{s}p_{\pi}(s)\sum_a\pi&rsquo;(a)A^{\pi}(s,a) \
+&amp; = &amp; \sum_{s}p_{\pi}(s)\sum_a\pi(a)\left( \frac{\pi&rsquo;(a)}{\pi(a)}A^{\pi}(s,a) \right) \
+&amp; = &amp; \mathbb{E}_{\pi}\left[  \frac{\pi&rsquo;(a)}{\pi(a)}A^{\pi}(s,a)
+\right]
+\end{array}
+$$</p>
+<h2 id="ppo">PPO</h2>
+<p>The original PPO paper introduced not one, but two new on-policy algorithms inspired by the success of the TRPO approach. Named clipped-objective PPO and adaptive KL PPO, the former is now the de facto &ldquo;PPO&rdquo; and is probably the most successful RL algorithm to date. Before learning how the clipped algorithm (which appeared at the start of this post) works, we introduce the adaptive KL approach.</p>
+<h3 id="adaptive-kl-ppo">Adaptive KL PPO</h3>
+<p>TRPO is, at its core, an optimisation problem with a constraint dictated by the $KL$ divergence:
+$$
+\max_{\pi&rsquo;}\left(\mathbb{E}<em>{\pi}\left[  \frac{\pi&rsquo;(a)}{\pi(a)}A^{\pi}(s,a)\right]\right) \quad \text{subject to} \quad \bar{D}</em>{KL}(\pi||\pi&rsquo;) &lt; \delta
+$$
+The idea behind adaptive $KL$ PPO is to turn this constrained optimisation problem into a pure optimisation problem. Here is the proposed objective to maximise:</p>
+<p>$$
+\max_{\pi&rsquo;}\left(\mathbb{E}<em>{\pi}\left[  \frac{\pi&rsquo;(a)}{\pi(a)}A^{\pi}(s,a)\right]  - \beta \bar{D}</em>{KL}(\pi||\pi&rsquo;) \right)
+$$
+Here, the parameter $\beta$ is a penalty coefficient that scales how much we care about the KL divergence constraint. A simple way to control this parameter (as suggested in the original PPO paper) is to set some target $KL$ divergence $d_{\text{tar}}$ and to update $\beta$ based on how the actual KL divergence $d = \bar{D}_{KL}(\pi||\pi&rsquo;)$ compares after each policy update.</p>
+<ul>
+<li>If $d &lt; d_{\text{tar}} / 1.5$, set $\beta \leftarrow \beta / 2$ (the policy update is too conservative, so reduce the penalty).</li>
+<li>If $d &gt; d_{\text{tar}} \times 1.5$, set $\beta \leftarrow \beta \times 2$ (the policy update is too aggressive, so increase the penalty).</li>
+</ul>
+<p>While this approach seems pretty robust and is an intuitive follow-up to TRPO, it was found that it can be replaced by a far simpler algorithm. In fact, we can do away with the $KL$ divergence completely!</p>
+<h3 id="clipped-objective-ppo">Clipped Objective PPO</h3>
+<p>The idea behind clipped objective PPO is to focus on the probability ratio between the new and the old policies. If we denote the action and state at time $t$ by $a_t$ and $s_t$, respectively, then we denote the probability ratio $r_t(\theta)$ by</p>
+<p>$$
+r_t(\theta) = \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta, \text{old}}(a_t|s_t)}
+$$
+where we have changed notation from $\pi&rsquo;$ to $\pi_{\theta}$ to match the original PPO paper. With this ratio in mind, the policy-improving objective can be written as
+$$
+\mathbb{E}<em>t\left[ r_t(\theta)A_t \right]
+$$
+where $\mathbb{E}<em>t$ is an expectation taken over all trajectories gathered from the old policy $\pi</em>{\theta,\text{old}}$. Now, if the advantage $A_t &gt; 0$, we want to increase the probability of the corresponding action, meaning we want $r_t(\theta)&gt;1$. Likewise, if $A_t &lt; 0$, we want to decrease the probability, meaning we desire $r_t(\theta) &lt; 1$. The ingenious trick in the clipped objective PPO algorithm was to enforce that $\pi</em>{\theta}$ and $\pi_{\theta,\text{old}}$ remain close not by using a KL divergence penalty, but by simply limiting how large or small the ratio $r_t(\theta)$ can be. Let&rsquo;s take a dive into the clipped PPO objective, as stated at the start of this post.</p>
+<p>$$
+L^{CLIP}(\theta) = \mathbb{E}<em>{t}\left[\min\left(r</em>{t}(\theta)\hat{A}<em>{t}, \text{clip}(r</em>{t}(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_{t}\right)\right]
+$$</p>
+<p>At this point, hopefully the terminology is clear, and the statement is readable. To understand what is happening inside the expectation, some graphs from the original PPO paper really help.
+<img src="https://i.postimg.cc/CK2dVwDV/graph.png" alt="foo">
+Let&rsquo;s analyse this case by case:</p>
+<ul>
+<li>When the advantage $A &gt; 0$, the objective increases with $r_t(\theta)$. However, the clip function prevents the ratio from exceeding $1 + \epsilon$, which stops the policy from changing too aggressively.</li>
+<li>When the advantage $A &lt; 0$, the objective is driven by making $r_t(\theta)$ smaller. The clip function prevents the ratio from going below $1 - \epsilon$, again limiting how large the policy update can be.</li>
+</ul>
+<p>Simply  put, we encourage $\pi_{\theta}$ and $\pi_{\theta, \text{old}}$ to be close, by simply clipping how big the ratio between the two can get! This offers a much simpler and faster implementation that $KL$ divergence based approaches.</p>
+<p>Two years later, OpenAI used PPO to <a href="https://www.youtube.com/watch?v=UZHTNBMAfAA">defeat pro players at Dota 2</a>, and a slightly altered version on PPO, GRPO is being used to <a href="https://arxiv.org/pdf/2402.03300">train LLM&rsquo;s to reason</a>. While I haven&rsquo;t gone into all of the details (there is more to say on the advantage estimation, for example), I hope this post has given you some insight into the development of PPO!</p>
+
+</content>
+
+
+
+<p>
+  
+</p>
+
+  </main>
+  <footer>Made with <a href="https://github.com/janraasch/hugo-bearblog/">Hugo ʕ•ᴥ•ʔ Bear</a>
+</footer>
+
+  
+</body>
+
+</html>
