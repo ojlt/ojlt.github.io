@@ -5,7 +5,23 @@
             inlineMath: [['$', '$'], ['\\(', '\\)']],
             displayMath: [['$$', '$$'], ['\\[', '\\]']],
             processEscapes: true,
-            processEnvironments: true
+            processEnvironments: true,
+            macros: {
+                R: '\\mathbb{R}',
+                E: '\\mathbb{E}',
+                Normal: '\\mathcal{N}',
+                loss: '\\mathcal{L}',
+                Var: '\\operatorname{Var}',
+                Cov: '\\operatorname{Cov}',
+                T: '^{\\!\\top}',
+                given: '\\mid',
+                defeq: '\\mathrel{:=}',
+                eqdef: '\\mathrel{=:}',
+                wmult: 'm_d',
+                mat: ['{\\boldsymbol{#1}}', 1],
+                vec: ['{\\boldsymbol{#1}}', 1],
+                norm: ['{\\left\\lVert #1 \\right\\rVert}', 1]
+            }
         },
         options: {
             skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
@@ -13,4 +29,22 @@
     };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script"></script>
+{{ end }}
+{{ if .Params.musiclist }}
+<style>
+  /* Music page — compact "catalogue" styling */
+  content h2 {
+    font-size: 1.1em;
+    margin: 1.5em 0 0.2em;
+    padding-bottom: 0.15em;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+  }
+  content h2:first-of-type { margin-top: 1.2em; }
+  content ul {
+    margin: 0.35em 0 0;
+    padding-left: 1.2em;
+  }
+  content li { margin-bottom: 0.2em; }
+  content li strong { margin-right: 0.15em; }
+</style>
 {{ end }}

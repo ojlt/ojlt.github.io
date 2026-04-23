@@ -1,6 +1,6 @@
 baseURL = 'https://ojlt.github.io/'
 languageCode = 'en-gb'
-title = "Owain's Blog"
+title = "Owain Thorp"
 theme = 'hugo-bearblog'
 
 [params]
@@ -12,11 +12,19 @@ description = "A simple blog about interesting things."
   weight = 5
 
 [[menu.main]]
-  name = "Desert Island Discs"      # The text that will appear in the menu
-  url = "/desert-island-discs/"     # The link to your new page
+  name = "Music"                    # The text that will appear in the menu
+  url = "/music/"                   # The link to your new page
   weight = 20         # A number to control the order
 
 [[menu.main]]
   name = "Blog"
   url = "/posts/"
   weight = 10
+
+# Let MathJax handle $...$ / $$...$$ — Goldmark passes the delimited content
+# through untouched, so underscores and asterisks in maths aren't mangled.
+[markup.goldmark.extensions.passthrough]
+  enable = true
+  [markup.goldmark.extensions.passthrough.delimiters]
+    block = [['\[', '\]'], ['$$', '$$']]
+    inline = [['\(', '\)'], ['$', '$']]

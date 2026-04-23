@@ -34,7 +34,7 @@ TRPO was created in 2015 and aimed to address the problems outlined above. Befor
 - $Q^{\pi}(s,a)$ is the action-value function, which is the expected total reward the agent can get by taking action $a$ in state $s$ and following policy $\pi$ afterwards.
 - $V^{\pi}(s)$ is the state-value function. This is the expected total reward the agent can get starting in state $s$ and following policy $\pi$ afterwards. It can also be represented in terms of $Q^{\pi}$: $V^{\pi}(s) = \sum_{a \in A} \pi(a|s) Q^{\pi}(s, a)$.
 - $A^{\pi}(s,a) = Q^{\pi}(s,a) - V^{\pi}(s)$ is the advantage function. Intuitively, it is a measure of how good an action $a$ is in state $s$, compared to the *average* action the policy would take in state $s$.
-- $p_{\pi}(s) = \mathbb{E}\_{\pi} \left[ \sum_{t=0}^\infty \gamma^t I_{S_t=s} \right]$ is the *discounted state visitation frequency*. It is a measure of how often we expect to encounter state $s$ following policy $\pi$, assigning heavier weights to earlier instances of $s$. Note that this is not actually a probability distribution.
+- $p_{\pi}(s) = \mathbb{E}_{\pi} \left[ \sum_{t=0}^\infty \gamma^t I_{S_t=s} \right]$ is the *discounted state visitation frequency*. It is a measure of how often we expect to encounter state $s$ following policy $\pi$, assigning heavier weights to earlier instances of $s$. Note that this is not actually a probability distribution.
 
 Now consider two different policies $\pi$ and $\pi'$. To measure their relative performance, we could take the difference between their expected returns, denoted $\Delta_{\eta}(\pi,\pi')$:
 {{< math >}}
@@ -136,7 +136,7 @@ where we have changed notation from $\pi'$ to $\pi_{\theta}$ to match the origin
 {{< math >}}
 \mathbb{E}_t\left[ r_t(\theta)A_t \right]
 {{< /math >}}
-where $\mathbb{E}\_t$ is an expectation taken over all trajectories gathered from the old policy $\pi_{\theta,\text{old}}$. Now, if the advantage $A_t > 0$, we want to increase the probability of the corresponding action, meaning we want $r_t(\theta)>1$. Likewise, if $A_t < 0$, we want to decrease the probability, meaning we desire $r_t(\theta) < 1$. The ingenious trick in the clipped objective PPO algorithm was to enforce that $\pi_{\theta}$ and $\pi_{\theta,\text{old}}$ remain close not by using a KL divergence penalty, but by simply limiting how large or small the ratio $r_t(\theta)$ can be. Let's take a dive into the clipped PPO objective, as stated at the start of this post.
+where $\mathbb{E}_t$ is an expectation taken over all trajectories gathered from the old policy $\pi_{\theta,\text{old}}$. Now, if the advantage $A_t > 0$, we want to increase the probability of the corresponding action, meaning we want $r_t(\theta)>1$. Likewise, if $A_t < 0$, we want to decrease the probability, meaning we desire $r_t(\theta) < 1$. The ingenious trick in the clipped objective PPO algorithm was to enforce that $\pi_{\theta}$ and $\pi_{\theta,\text{old}}$ remain close not by using a KL divergence penalty, but by simply limiting how large or small the ratio $r_t(\theta)$ can be. Let's take a dive into the clipped PPO objective, as stated at the start of this post.
 
 {{< math >}}
 L^{CLIP}(\theta) = \mathbb{E}_{t}\left[\min\left(r_{t}(\theta)\hat{A}_{t}, \text{clip}(r_{t}(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_{t}\right)\right]
