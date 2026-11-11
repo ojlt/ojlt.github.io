@@ -1,0 +1,32 @@
+{{ define "main" }}
+{{ if eq .Section "posts" }}
+<article class="post">
+  <p class="post-meta">
+    <time datetime='{{ .Date.Format "2006-01-02" }}'>{{ .Date.Format "2 January 2006" }}</time><span class="dot">&middot;</span>{{ .ReadingTime }} min read
+  </p>
+  <content>
+    {{ .Content }}
+  </content>
+  {{ if or .PrevInSection .NextInSection }}
+  <nav class="post-nav" aria-label="More posts">
+    {{ with .PrevInSection }}<a class="prev" href="{{ .RelPermalink }}"><span>&larr; Earlier</span><b>{{ .Title }}</b></a>{{ end }}
+    {{ with .NextInSection }}<a class="next" href="{{ .RelPermalink }}"><span>Later &rarr;</span><b>{{ .Title }}</b></a>{{ end }}
+  </nav>
+  {{ end }}
+</article>
+{{ if gt (len .Fragments.Headings) 0 }}
+<aside class="toc" aria-label="Contents">
+  <p class="toc-title">Contents</p>
+  {{ .TableOfContents }}
+</aside>
+{{ end }}
+{{ else }}
+<h1>{{ .Title }}</h1>
+<content>
+  {{ if .Params.musiclist -}}
+  {{- /* wrap catalogue numbers, e.g. (Op. 131), so CSS can set them in monospace */ -}}
+  {{ .Content | replaceRE `\(((?:Opp?\.|BWV|Sz\.|K\.|D\.|Hob\.) [^()<]{1,20})\)` `<span class="cat">($1)</span>` | safeHTML }}
+  {{- else }}{{ .Content }}{{ end }}
+</content>
+{{ end }}
+{{ end }}

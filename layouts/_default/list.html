@@ -1,0 +1,9 @@
+{{ define "main" }}
+<h1>{{ if eq .Section "posts" }}Blog{{ else }}{{ .Title }}{{ end }}</h1>
+{{ range .Pages.GroupByDate "2006" }}
+<p class="year-label">{{ .Key }}</p>
+{{ partial "post-list.html" .Pages }}
+{{ else }}
+<p class="lede">No posts yet.</p>
+{{ end }}
+{{ end }}

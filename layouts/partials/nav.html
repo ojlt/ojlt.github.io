@@ -1,0 +1,9 @@
+{{- /* Menu entries whose page does not exist in this build (e.g. a draft) are skipped,
+       so the nav never links to a 404. */ -}}
+{{- $here := .RelPermalink -}}
+{{- range .Site.Menus.main -}}
+  {{- if or (strings.HasPrefix .URL "http") (site.GetPage .URL) -}}
+    {{- $active := or (eq $here .URL) (and (ne .URL "/") (strings.HasPrefix $here .URL)) }}
+<a href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a>
+  {{- end -}}
+{{- end }}

@@ -1,0 +1,18 @@
+{{- /* A list of posts: date, title, and a one-line description.
+       Falls back to the post's opening sentence when no description is set. */ -}}
+<ul class="post-list">
+  {{- range . }}
+  {{- $desc := .Params.description -}}
+  {{- if not $desc -}}
+    {{- $plain := strings.TrimSpace (strings.TrimPrefix .Title (strings.TrimSpace .Plain)) -}}
+    {{- $desc = printf "%s." (index (split $plain ". ") 0) -}}
+  {{- end }}
+  <li>
+    <time datetime='{{ .Date.Format "2006-01-02" }}'>{{ .Date.Format "2 Jan 2006" }}</time>
+    <div>
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <p>{{ $desc }} <span class="mins">{{ .ReadingTime }}&nbsp;min</span></p>
+    </div>
+  </li>
+  {{- end }}
+</ul>

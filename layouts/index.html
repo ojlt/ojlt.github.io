@@ -1,0 +1,15 @@
+{{ define "main" }}
+<div class="intro">
+{{ .Content }}
+</div>
+
+{{ with (where .Site.RegularPages "Section" "posts") }}
+<section>
+  <div class="section-head">
+    <h2>Recent writing</h2>
+    {{ with site.GetPage "/posts" }}<a href="{{ .RelPermalink }}">All posts &rarr;</a>{{ end }}
+  </div>
+  {{ partial "post-list.html" (first 5 .) }}
+</section>
+{{ end }}
+{{ end }}

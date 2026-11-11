@@ -1,10 +1,10 @@
-baseURL = 'https://www.owainthorp.com/'
+baseURL = 'https://ojlt.github.io/'
 languageCode = 'en-gb'
 title = "Owain Thorp"
 theme = 'hugo-bearblog'
 
 [params]
-description = "A simple blog about interesting things."
+description = "Owain Thorp: notes on machine learning, robot learning and AI safety."
 
 [[menu.main]]
   name = "Home"

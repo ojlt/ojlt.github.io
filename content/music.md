@@ -4,7 +4,7 @@ date = 2025-09-23T13:22:05+01:00
 draft = false
 musiclist = true
 +++
-A list, in no particular order, of music I like. While you're here, do check out my [YouTube channel](https://www.youtube.com/@owainthorp3536) for the occasional upload.
+A list, in no particular order, of the music I like best. While you're here, do check out my [YouTube channel](https://www.youtube.com/@owainthorp3536) for the occasional upload.
 
 ## Johann Sebastian Bach
 
